@@ -1,0 +1,12 @@
+Installation process: 
+
+1. Download python 3.10.11 from browser
+2. run on cmd line: python3.10 -m venv myenv
+3. run on cmd line: source myenv/bin/activate
+2. run on cmd line: python3.10 --version
+3. run on cmd line: pip install opencv-python numpy tensorflow scikit-learn mediapipe 
+4. run on cmd line: python3 asl-trainer.py
+5. run on cmd line: python3.10 asl_trainer.py
+6. run on cmd line: python3.10 realtime_asl.py
+
+to exit virtual env: deactivate
