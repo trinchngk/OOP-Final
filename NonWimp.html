@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ASL ABCs</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #e0e0e0;
+
+        }
+        
+        .main-container {
+            display: flex;
+            flex-grow: 1;
+        }
+             
+        .top-container {
+            width: 100%;
+            height: 10%;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: row;
+            color:#414FCD
+        }
+        .spacing-container {
+            width: 100%;
+            height: 2%;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: row;
+        }
+        .top-container label {
+            display: flex;
+            margin:auto;
+            text-align: center; 
+            font-family: 'Times New Roman', Times, serif; 
+            font-size: 450%;
+            font-weight: bold;
+        }
+        
+        .left-section {
+            width: 65%;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .empty-div {
+            flex-grow: 1;
+            border: 2px dashed #888;
+            /* margin: 20px; */
+            background-color: black;
+        }
+        
+        .right-section {
+            width: 35%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #e0e0e0;
+            padding: 20px;
+        }
+        
+        .image-container {
+            text-align: center;
+        }
+        
+        .image-container img {
+            max-width: 100%;
+            max-height: 200px;
+        }
+        
+        .image-caption {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 275%;
+            color: #414FCD;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .navigation-buttons button {
+            padding: 5px 10px;
+            background: #414FCD;
+            color: #f5f5f5;
+        }
+        .spacing-navigation {
+            width: 35%;
+            height: 20%;
+            background-color: #e0e0e0;
+            display: flex;
+            flex-direction: row;
+        }
+        .bottom-container {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            background-color: f0f0f0;
+        }
+        
+        .bottom-section {
+            width: 61.8%;
+            background-color: #f0f0f0;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .nextLevel-section {
+            display: flex;
+            margin-top: 10px;
+            flex-grow: 1;
+            background-color: f0f0f0;
+            padding: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+        .nextLevel-section button {
+            justify-content: center;
+            padding: 5px 10px;
+            background: blue;
+            color: #f0f0f0;
+        }
+        .result-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .try-again-image {
+            max-width: 75px;
+            max-height: 75px;
+        }
+        .correct-image {
+            max-width: 75px;
+            max-height: 75px;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-container">
+        <label> ABCs of ASL </label>
+    </div>
+    <div class = "spacing-container"></div>
+        <div class="main-container">
+            <div class="left-section">
+                <div class="empty-div" id="contentDiv">
+                    <!-- This div can be filled dynamically later -->
+                </div>
+            </div>
+            
+            <div class="right-section">
+                <div class="image-container">
+                    <img id="currentImage" src="">
+                    <div id="imageCaption" class="image-caption"></div>
+                </div>
+                <div class = "spacing-navigation" ></div>
+                    <div class="navigation-buttons">
+                        <button onclick="previousImage()">Previous</button>
+                        <button onclick="nextImage()">Next</button>
+                    </div>
+            </div>
+        </div>
+        <div class = "bottom-container"> 
+            <div class="bottom-section" id="resultSection">
+                <div class="result-container" id="resultContainer">
+                    <img id="tryAgainImage" src="incorrect.png" alt="Try Again Image" class="try-again-image">
+                    <span id="resultText">Incorrect. Try again.</span>
+                    <img id="correctImage" src="correct.png" alt="Correct Image" class="correct-image" style="display: none;">
+                </div>
+            </div>
+            <div class = "nextLevel-section" > 
+                <button onclick = "nextLevel()"> Next Level </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const levels = {
+            levelOne: [
+                { src: 'alphabet_images/A.png', caption: 'A' },
+                { src: 'alphabet_images/B.png', caption: 'B' },
+                { src: 'alphabet_images/C.png', caption: 'C' },
+                { src: 'alphabet_images/D.png', caption: 'D' },
+                { src: 'alphabet_images/E.png', caption: 'E' },
+                { src: 'alphabet_images/F.png', caption: 'F' },
+                { src: 'alphabet_images/G.png', caption: 'G' },
+                { src: 'alphabet_images/H.png', caption: 'H' },
+                { src: 'alphabet_images/I.png', caption: 'I' },
+                { src: 'alphabet_images/J.png', caption: 'J - (sign with left hand)' },
+                { src: 'alphabet_images/K.png', caption: 'K' },
+                { src: 'alphabet_images/L.png', caption: 'L' },
+                { src: 'alphabet_images/M.png', caption: 'M' },
+                { src: 'alphabet_images/N.png', caption: 'N' },
+                { src: 'alphabet_images/O.png', caption: 'O' },
+                { src: 'alphabet_images/P.png', caption: 'P' },
+                { src: 'alphabet_images/Q.png', caption: 'Q' },
+                { src: 'alphabet_images/R.png', caption: 'R' },
+                { src: 'alphabet_images/S.png', caption: 'S' },
+                { src: 'alphabet_images/T.png', caption: 'T' },
+                { src: 'alphabet_images/U.png', caption: 'U' },
+                { src: 'alphabet_images/V.png', caption: 'V' },
+                { src: 'alphabet_images/W.png', caption: 'W' },
+                { src: 'alphabet_images/X.png', caption: 'X' },
+                { src: 'alphabet_images/Y.png', caption: 'Y' },
+                { src: 'alphabet_images/Z.png', caption: 'Z - (sign with left hand)' },
+            ],
+            levelTwo: [
+                { content: 'A' },
+                { content: 'B' },
+                { content: 'C' },
+                { content: 'D' },
+                { content: 'E' },
+                { content: 'F' },
+                { content: 'G' },
+                { content: 'H' },
+                { content: 'I' },
+                { content: 'J' },
+                { content: 'K' },
+                { content: 'L' },
+                { content: 'M' },
+                { content: 'N' },
+                { content: 'O' },
+                { content: 'P' },
+                { content: 'Q' },
+                { content: 'R' },
+                { content: 'S' },
+                { content: 'T' },
+                { content: 'U' },
+                { content: 'V' },
+                { content: 'W' },
+                { content: 'X' },
+                { content: 'Y' },
+                { content: 'Z' }
+            ],
+            levelThree: [
+                { src: 'word_images/Dog.png', caption: '_ _ _' },
+                { src: 'word_images/Hat.png', caption: '_ _ _' },
+                { src: 'word_images/Ice.png', caption: '_ _ _' },
+                { src: 'word_images/Joke.png', caption: '_ _ _ _' },
+                { src: 'word_images/Stir.png', caption: '_ _ _ _' },
+                { src: 'word_images/Pore.png', caption: '_ _ _ _' },
+                { src: 'word_images/Animal.png', caption: '_ _ _ _ _ _' },
+                { src: 'word_images/Drive.png', caption: '_ _ _ _ _' },
+                { src: 'word_images/Apple.png', caption: '_ _ _ _ _' },
+             
+                
+            ]
+
+        };
+        
+        let currentState = {
+            currentLevel: 'levelOne', // default
+            currentIndex: 0
+        };
+        let currentImageIndex = 0;
+
+
+        // Function to update the displayed image
+        function updateImage(index) {
+
+            const currentLevelContent = levels[currentState.currentLevel];
+
+            currentImageIndex = (index + currentLevelContent.length) % currentLevelContent.length;
+
+            const currentImage = document.getElementById('currentImage');
+            const imageCaption = document.getElementById('imageCaption');
+
+        if (currentState.currentLevel === 'levelOne') {
+            currentImage.src = currentLevelContent[currentImageIndex].src;
+            imageCaption.textContent = currentLevelContent[currentImageIndex].caption;
+        } 
+        else if (currentState.currentLevel === 'levelTwo') {
+                currentImage.src = ''; // Clear image
+                imageCaption.textContent = currentLevelContent[currentImageIndex].content;
+            }
+        else{ //level 3
+            currentImage.src = currentLevelContent[currentImageIndex].src;
+            imageCaption.textContent = currentLevelContent[currentImageIndex].caption;
+        }
+
+        }
+
+        // Function to go to next image
+        function nextImage() {
+            updateImage(currentImageIndex + 1);
+        }
+
+        // Function to go to previous image
+        function previousImage() {
+            updateImage(currentImageIndex - 1);
+            updateResult(true);
+        }
+
+        // Function to update content in the left div
+        function updateContent(content) {
+            const contentDiv = document.getElementById('contentDiv');
+            contentDiv.innerHTML = content;
+        }
+
+        function updateResult(isCorrect) {
+            const resultContainer = document.getElementById('resultContainer');
+            const tryAgainImage = document.getElementById('tryAgainImage');
+            const correctImage = document.getElementById('correctImage');
+            const resultText = document.getElementById('resultText');
+            console.log("changing...");
+
+            if (isCorrect) {
+                resultText.textContent = 'Correct!';
+                resultText.style.color = 'blue';
+                tryAgainImage.style.display = 'none';
+                correctImage.style.display = 'inline-block';
+            } else {
+                resultText.textContent = 'Incorrect. Try again.';
+                resultText.style.color = 'blue';
+                correctImage.style.display = 'none'; 
+                tryAgainImage.style.display = 'inline-block';
+            }
+        }
+        function nextLevel() {
+            const levelProgression = {
+                'levelOne': 'levelTwo',
+                'levelTwo': 'levelThree'
+            };
+
+            const nextLevelKey = levelProgression[currentState.currentLevel];
+
+            if (nextLevelKey) {
+                changeLevel(nextLevelKey);
+            } else {
+                console.log('You have completed all levels of ABCs of ASL!');
+            }
+        }
+        function changeLevel(newLevel) {
+            if (levels[newLevel]) {
+                currentState.currentLevel = newLevel;
+                currentState.currentIndex = 0;
+                updateImage(0);
+            } else {
+                console.error('Level not found');
+         
