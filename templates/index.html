@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ASL Recognition</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        body { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            font-family: Arial, sans-serif; 
+        }
+        #videoContainer {
+            position: relative;
+            width: 640px;
+            height: 480px;
+        }
+        #videoFeed {
+            width: 100%;
+            height: 100%;
+            transform: scaleX(-1);
+            border-radius: 10px;
+        }
+        #predictionOverlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>ASL Recognition</h1>
+    <div id="videoContainer">
+        <video id="videoFeed" autoplay playsinline></video>
+        <div id="predictionOverlay">Prediction: -</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const videoElement = document.getElementById('videoFeed'); // Use the existing videoFeed element
+            const predictionOverlay = document.getElementById('predictionOverlay');
+            const socket = io(); // Connect to the socket server
+
+            // Set up video capture
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    videoElement.srcObject = stream; // Attach stream to the videoFeed element
+                    videoElement.play();
+                })
+                .catch(err => {
+                    console.error("Error accessing webcam:", err);
+                });
+
+            // Canvas for processing frames
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Frame sending interval
+            setInterval(() => {
+                if (videoElement.videoWidth === 0) return;
+
+                // Set canvas dimensions to match video
+                canvas.width = videoElement.videoWidth;
+                canvas.height = videoElement.videoHeight;
+
+                // Draw current video frame to canvas
+                ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+                // Convert canvas to base64
+                const frameData = canvas.toDataURL('image/jpeg');
+
+                // Send frame to server for prediction
+                socket.emit('predict', { frame: frameData });
+            }, 100); // Send frame every 100ms
+
+            // Handle prediction response
+            socket.on('prediction', (data) => {
+                if (data && data.letter) {
+                    predictionOverlay.textContent = `You're signing ${data.letter}!`;
+                } else {
+                    predictionOverlay.textContent = "You're not currently signing a letter.";
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
