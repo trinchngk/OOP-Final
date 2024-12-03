@@ -85,7 +85,7 @@ class ASLModelTrainer:
         print(f"\nTest accuracy: {test_accuracy:.4f}")
         
         # Save the model in H5 format
-        model.save("asl_recognition_model.h5")
+        model.save("models/asl_recognition_model.h5")
         
         return model, history
 
