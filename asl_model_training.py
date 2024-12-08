@@ -72,7 +72,7 @@ class ASLDataCollector:
         cap = cv2.VideoCapture(0)
         current_label_idx = 0
         samples_per_label = 0
-        max_samples = 50  # Number of samples to collect per letter
+        max_samples = 150  # Number of samples to collect per letter
         
         while cap.isOpened():
             ret, frame = cap.read()
