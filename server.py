@@ -12,7 +12,7 @@ import mediapipe as mp
 
 class ASLRecognizerServer:
 
-    def __init__(self, model_path="models/asl_recognition_model.h5"):
+    def __init__(self, model_path="models/asl_recognition_model.keras"):
 
         # log for debugging
         logging.basicConfig(level=logging.INFO)
@@ -65,6 +65,7 @@ class ASLRecognizerServer:
         image_bytes = base64.b64decode(image_data.split(',')[1])
         nparr = np.frombuffer(image_bytes, np.uint8)
         frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        # frame = cv2.flip(frame, 1)
 
         # Convert BGR to RGB
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)

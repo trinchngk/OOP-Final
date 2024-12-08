@@ -16,7 +16,7 @@ def convert_model(input_path, output_dir):
 
 if __name__ == "__main__":
     # Paths for model conversion
-    input_model_path = "models/asl_recognition_model.h5"
+    input_model_path = "models/asl_recognition_model.keras"
     output_model_dir = "models/tfjs_model"
     
     convert_model(input_model_path, output_model_dir)

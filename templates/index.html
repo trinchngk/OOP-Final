@@ -4,17 +4,18 @@
     <meta charset="UTF-8">
     <title>ASL Recognition</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <style>
-        body { 
+        /* body { 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             font-family: Arial, sans-serif; 
-        }
+        } */
         #videoContainer {
             position: relative;
-            width: 640px;
-            height: 480px;
+            width: 888px;
+            height: 666px;
         }
         #videoFeed {
             width: 100%;
@@ -31,13 +32,184 @@
             padding: 10px;
             border-radius: 5px;
         }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            font-family: "Montserrat", sans-serif;
+            background-color: #e0e0e0;
+
+        }
+        
+        .main-container {
+            display: flex;
+            flex-grow: 1;
+        }
+             
+        .top-container {
+            width: 100%;
+            height: 10%;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: row;
+            color:#414FCD
+        }
+        .spacing-container {
+            width: 100%;
+            height: 2%;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: row;
+        }
+        .top-container label {
+            display: flex;
+            margin:auto;
+            text-align: center; 
+            font-size: 450%;
+            font-weight: bold;
+        }
+        
+        .left-section {
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        
+        .right-section {
+            width: 35%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #e0e0e0;
+            padding: 50px;
+        }
+        
+        .image-container {
+            text-align: center;
+        }
+        
+        .image-container img {
+            max-width: 100%;
+            max-height: 200px;
+        }
+        
+        .image-caption {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 275%;
+            color: #414FCD;
+        }
+        button {
+            display: block;
+            border: 1px solid #414FCD;
+            color: #fff;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            background: #414FCD;  
+            padding: 14px 60px;
+            font-size: 18px;
+            margin-top: 20px;
+            cursor: pointer;  
+            border-radius: 10px;
+
+        }       
+        button:hover{
+            transform: scale(1.05);
+        } 
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .spacing-navigation {
+            width: 35%;
+            height: 20%;
+            background-color: #e0e0e0;
+            display: flex;
+            flex-direction: row;
+        }
+        .bottom-container {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            background-color: f0f0f0;
+        }
+        
+        .bottom-section {
+            width: 58%;
+            background-color: #f0f0f0;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .nextLevel-section {
+            display: flex;
+            margin-top: 10px;
+            flex-grow: 1;
+            background-color: f0f0f0;
+            padding: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+        .result-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .try-again-image {
+            max-width: 75px;
+            max-height: 75px;
+        }
+        .correct-image {
+            max-width: 75px;
+            max-height: 75px;
+        }
     </style>
 </head>
 <body>
-    <h1>ASL Recognition</h1>
-    <div id="videoContainer">
-        <video id="videoFeed" autoplay playsinline></video>
-        <div id="predictionOverlay">Prediction: -</div>
+    <div class="top-container">
+        <label> ABCs of ASL </label>
+    </div>
+    <div class="spacing-container"></div>
+        <div class="main-container">
+            <div class="left-section">
+                <div class="empty-div" id="contentDiv">
+                    <div id="videoContainer">
+                        <video id="videoFeed" autoplay playsinline></video>
+                        <div id="predictionOverlay">Prediction: -</div>
+                    </div>
+                </div>
+                <div class="bottom-section" id="resultSection">
+                    <div class="result-container" id="resultContainer">
+                        <img id="tryAgainImage" src="incorrect.png" alt="Try Again Image" class="try-again-image">
+                        <span id="resultText">Incorrect. Try again.</span>
+                        <img id="correctImage" src="correct.png" alt="Correct Image" class="correct-image" style="display: none;">
+                    </div>
+                </div>
+            </div>
+            <div class="right-section">
+                <div class="image-container">
+                    <img id="currentImage" src="">
+                    <div id="imageCaption" class="image-caption"></div>
+                </div>
+                <div class = "spacing-navigation" ></div>
+                    <div class="navigation-buttons">
+                        <button onclick="previousImage()">Prev</button>
+                        <button onclick="nextImage()">Next</button>
+                    </div>         
+                <div class = "nextLevel-section" > 
+                    <button onclick = "nextLevel()"> Next Level </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -81,13 +253,232 @@
             // Handle prediction response
             socket.on('prediction', (data) => {
                 if (data && data.letter) {
-                    predictionOverlay.textContent = `You're signing ${data.letter}!`;
+                    predictionOverlay.textContent = `Prediction: ${data.letter} (Confidence: ${(data.confidence * 100).toFixed(2)}%)`;
+                    imageCaption = document.getElementById('imageCaption').innerText;
+
+                    console.log("caption" + imageCaption);
+                    console.log("prediction:" + data.letter);
+                    if (imageCaption === data.letter) {
+                        updateResult(true);
+                    } else updateResult(false);
+                    
                 } else {
                     predictionOverlay.textContent = "You're not currently signing a letter.";
                 }
             });
         });
 
+    </script>
+
+
+
+    <script>
+        const levels = {
+            levelOne: [
+                { src: 'alphabet_images/A.png', caption: 'A' },
+                { src: 'alphabet_images/B.png', caption: 'B' },
+                { src: 'alphabet_images/C.png', caption: 'C' },
+                { src: 'alphabet_images/D.png', caption: 'D' },
+                { src: 'alphabet_images/E.png', caption: 'E' },
+                { src: 'alphabet_images/F.png', caption: 'F' },
+                { src: 'alphabet_images/G.png', caption: 'G' },
+                { src: 'alphabet_images/H.png', caption: 'H' },
+                { src: 'alphabet_images/I.png', caption: 'I' },
+                { src: 'alphabet_images/J.png', caption: 'J - (sign with left hand)' },
+                { src: 'alphabet_images/K.png', caption: 'K' },
+                { src: 'alphabet_images/L.png', caption: 'L' },
+                { src: 'alphabet_images/M.png', caption: 'M' },
+                { src: 'alphabet_images/N.png', caption: 'N' },
+                { src: 'alphabet_images/O.png', caption: 'O' },
+                { src: 'alphabet_images/P.png', caption: 'P' },
+                { src: 'alphabet_images/Q.png', caption: 'Q' },
+                { src: 'alphabet_images/R.png', caption: 'R' },
+                { src: 'alphabet_images/S.png', caption: 'S' },
+                { src: 'alphabet_images/T.png', caption: 'T' },
+                { src: 'alphabet_images/U.png', caption: 'U' },
+                { src: 'alphabet_images/V.png', caption: 'V' },
+                { src: 'alphabet_images/W.png', caption: 'W' },
+                { src: 'alphabet_images/X.png', caption: 'X' },
+                { src: 'alphabet_images/Y.png', caption: 'Y' },
+                { src: 'alphabet_images/Z.png', caption: 'Z - (sign with left hand)' },
+            ],
+            levelTwo: [
+                { content: 'A' },
+                { content: 'B' },
+                { content: 'C' },
+                { content: 'D' },
+                { content: 'E' },
+                { content: 'F' },
+                { content: 'G' },
+                { content: 'H' },
+                { content: 'I' },
+                { content: 'J' },
+                { content: 'K' },
+                { content: 'L' },
+                { content: 'M' },
+                { content: 'N' },
+                { content: 'O' },
+                { content: 'P' },
+                { content: 'Q' },
+                { content: 'R' },
+                { content: 'S' },
+                { content: 'T' },
+                { content: 'U' },
+                { content: 'V' },
+                { content: 'W' },
+                { content: 'X' },
+                { content: 'Y' },
+                { content: 'Z' }
+            ],
+            levelThree: [
+                { src: 'word_images/Dog.png', caption: '_ _ _' },
+                { src: 'word_images/Hat.png', caption: '_ _ _' },
+                { src: 'word_images/Ice.png', caption: '_ _ _' },
+                { src: 'word_images/Joke.png', caption: '_ _ _ _' },
+                { src: 'word_images/Stir.png', caption: '_ _ _ _' },
+                { src: 'word_images/Pore.png', caption: '_ _ _ _' },
+                { src: 'word_images/Animal.png', caption: '_ _ _ _ _ _' },
+                { src: 'word_images/Drive.png', caption: '_ _ _ _ _' },
+                { src: 'word_images/Apple.png', caption: '_ _ _ _ _' },
+            
+                
+            ]
+
+        };
+        
+        let currentState = {
+            currentLevel: 'levelOne', // default
+            currentIndex: 0
+        };
+        let currentImageIndex = 0;
+
+
+        // Function to update the displayed image
+        function updateImage(index) {
+
+            const currentLevelContent = levels[currentState.currentLevel];
+
+            currentImageIndex = (index + currentLevelContent.length) % currentLevelContent.length;
+
+            const currentImage = document.getElementById('currentImage');
+            const imageCaption = document.getElementById('imageCaption');
+
+        if (currentState.currentLevel === 'levelOne') {
+            currentImage.src = currentLevelContent[currentImageIndex].src;
+            imageCaption.textContent = currentLevelContent[currentImageIndex].caption;
+        } 
+        else if (currentState.currentLevel === 'levelTwo') {
+                currentImage.src = ''; // Clear image
+                imageCaption.textContent = currentLevelContent[currentImageIndex].content;
+            }
+        else{ //level 3
+            currentImage.src = currentLevelContent[currentImageIndex].src;
+            imageCaption.textContent = currentLevelContent[currentImageIndex].caption;
+        }
+
+        }
+
+        // Function to go to next image
+        function nextImage() {
+            updateImage(currentImageIndex + 1);
+        }
+
+        // Function to go to previous image
+        function previousImage() {
+            updateImage(currentImageIndex - 1);
+            updateResult(true);
+        }
+
+        // Function to update content in the left div
+        function updateContent(content) {
+            const contentDiv = document.getElementById('contentDiv');
+            contentDiv.innerHTML = content;
+        }
+
+        function updateResult(isCorrect) {
+            const resultContainer = document.getElementById('resultContainer');
+            const tryAgainImage = document.getElementById('tryAgainImage');
+            const correctImage = document.getElementById('correctImage');
+            const resultText = document.getElementById('resultText');
+            console.log("changing...");
+
+            if (isCorrect) {
+                resultText.textContent = 'Correct!';
+                resultText.style.color = 'green';
+                tryAgainImage.style.display = 'none';
+                correctImage.style.display = 'inline-block';
+            } else {
+                resultText.textContent = 'Incorrect. Try again.';
+                resultText.style.color = 'red';
+                correctImage.style.display = 'none'; 
+                tryAgainImage.style.display = 'inline-block';
+            }
+        }
+        function nextLevel() {
+            const levelProgression = {
+                'levelOne': 'levelTwo',
+                'levelTwo': 'levelThree'
+            };
+
+            const nextLevelKey = levelProgression[currentState.currentLevel];
+
+            if (nextLevelKey) {
+                changeLevel(nextLevelKey);
+            } else {
+                console.log('You have completed all levels of ABCs of ASL!');
+            }
+        }
+        function changeLevel(newLevel) {
+            if (levels[newLevel]) {
+                currentState.currentLevel = newLevel;
+                currentState.currentIndex = 0;
+                updateImage(0);
+            } else {
+                console.error('Level not found');
+            }
+        }
+
+        // computer vision stuff happens,,, detecting the correct usage... 
+        // updateResult(true); if they got it right and false if they didn't
+
+        // ------ FOR LEVEL 3 --------  
+        //final letter variable will be called letter bc i forgot the variable name sorry
+        //targetWord
+        function checkLetter(letter) {
+            this.currentIndex = 0;
+            letter = letter.toLowerCase();// is it already lowercase?? if not lets do this 
+
+            if (letter === this.targetWord[this.currentIndex]) {
+                this.wordDisplay[this.currentIndex] = letter;
+
+                //move on to the next letter
+                this.currentIndex++;
+
+                if (this.currentIndex === this.targetWord.length) {//check if done
+                    return {
+                        status: 'complete',
+                        message: 'Yay! You signed the entire word!',
+                        display: this.wordDisplay.join(' ')
+                    };
+                }
+                //update result message bc they spelled the letter correctly 
+                updateResult(true);
+                return {
+                    status: 'correct',
+                    message: 'Correct! Next letter.',
+                    display: this.wordDisplay.join(' ')
+                };
+            } else {
+                updateResult(false);
+                //incorrect letter
+                return {
+                    status: 'incorrect',
+                    message: `Incorrect. Try again. Looking for ${this.targetWord[this.currentIndex]}.`,
+                    display: this.wordDisplay.join(' ')
+                };
+            }
+        }
+        updateImage(0);
     </script>
 </body>
 </html>
