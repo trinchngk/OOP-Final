@@ -6,7 +6,7 @@ Installation process:
 4. run on cmd line: python3.10 --version
 5. run on cmd line: pip install requirements
 6. run on cmd line: pip install opencv-python numpy tensorflow scikit-learn mediapipe 
-7. run on cmd line: python3 asl-trainer.py
+pip install flask flask-socketio flask-cors waitress socket.io tensorflow.js keras
 8. run on cmd line: python3.10 asl_trainer.py
 9. run on cmd line: python3.10 server.py
 
