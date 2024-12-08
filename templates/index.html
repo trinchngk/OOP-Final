@@ -189,9 +189,9 @@
                 </div>
                 <div class="bottom-section" id="resultSection">
                     <div class="result-container" id="resultContainer">
-                        <img id="tryAgainImage" src="incorrect.png" alt="Try Again Image" class="try-again-image">
+                        <h1 id="tryAgainImage" class="try-again-image" style="color: red">X</h1>
                         <span id="resultText">Incorrect. Try again.</span>
-                        <img id="correctImage" src="correct.png" alt="Correct Image" class="correct-image" style="display: none;">
+                        <h1 id="correctImage" class="correct-image" style="display: none; color: green">✓</h1>
                     </div>
                 </div>
             </div>
@@ -260,12 +260,14 @@
                     console.log("prediction:" + data.letter);
                     if (imageCaption === data.letter) {
                         updateResult(true);
+                        nextImage();
                     } else updateResult(false);
                     
                 } else {
                     predictionOverlay.textContent = "You're not currently signing a letter.";
                 }
             });
+            updateImage(0);
         });
 
     </script>
@@ -284,7 +286,7 @@
                 { src: 'alphabet_images/G.png', caption: 'G' },
                 { src: 'alphabet_images/H.png', caption: 'H' },
                 { src: 'alphabet_images/I.png', caption: 'I' },
-                { src: 'alphabet_images/J.png', caption: 'J - (sign with left hand)' },
+                // { src: 'alphabet_images/J.png', caption: 'J - (sign with left hand)' },
                 { src: 'alphabet_images/K.png', caption: 'K' },
                 { src: 'alphabet_images/L.png', caption: 'L' },
                 { src: 'alphabet_images/M.png', caption: 'M' },
@@ -300,7 +302,7 @@
                 { src: 'alphabet_images/W.png', caption: 'W' },
                 { src: 'alphabet_images/X.png', caption: 'X' },
                 { src: 'alphabet_images/Y.png', caption: 'Y' },
-                { src: 'alphabet_images/Z.png', caption: 'Z - (sign with left hand)' },
+                // { src: 'alphabet_images/Z.png', caption: 'Z - (sign with left hand)' },
             ],
             levelTwo: [
                 { content: 'A' },
@@ -312,7 +314,7 @@
                 { content: 'G' },
                 { content: 'H' },
                 { content: 'I' },
-                { content: 'J' },
+                // { content: 'J' },
                 { content: 'K' },
                 { content: 'L' },
                 { content: 'M' },
@@ -328,20 +330,21 @@
                 { content: 'W' },
                 { content: 'X' },
                 { content: 'Y' },
-                { content: 'Z' }
+                // { content: 'Z' }
             ],
             levelThree: [
-                { src: 'word_images/Dog.png', caption: '_ _ _' },
-                { src: 'word_images/Hat.png', caption: '_ _ _' },
-                { src: 'word_images/Ice.png', caption: '_ _ _' },
-                { src: 'word_images/Joke.png', caption: '_ _ _ _' },
-                { src: 'word_images/Stir.png', caption: '_ _ _ _' },
-                { src: 'word_images/Pore.png', caption: '_ _ _ _' },
-                { src: 'word_images/Animal.png', caption: '_ _ _ _ _ _' },
-                { src: 'word_images/Drive.png', caption: '_ _ _ _ _' },
-                { src: 'word_images/Apple.png', caption: '_ _ _ _ _' },
-            
-                
+
+                { src: 'word_images/Bat.png', caption: '_ _ _', word: 'bat'},
+                { src: 'word_images/Dog.png', caption: '_ _ _', word: 'dog' },
+                { src: 'word_images/Hat.png', caption: '_ _ _', word: 'hat' },
+                { src: 'word_images/Ice.png', caption: '_ _ _', word: 'ice' },
+                { src: 'word_images/poke.png', caption: '_ _ _ _', word: 'poke' },
+                { src: 'word_images/Stir.png', caption: '_ _ _ _', word: 'stir' },
+                { src: 'word_images/Pore.png', caption: '_ _ _ _', word: 'pore' },
+                { src: 'word_images/Animal.png', caption: '_ _ _ _ _ _', word: 'animal' },
+                { src: 'word_images/Drive.png', caption: '_ _ _ _ _', word: 'drive' },
+                { src: 'word_images/Apple.png', caption: '_ _ _ _ _', word: 'apple' },
+
             ]
 
         };
@@ -362,8 +365,18 @@
 
             const currentImage = document.getElementById('currentImage');
             const imageCaption = document.getElementById('imageCaption');
+        
 
-        if (currentState.currentLevel === 'levelOne') {
+        if(currentState.currentLevel === 'levelThree'){ //level 3
+            currentImage.src = currentLevelContent[currentImageIndex].src;
+            imageCaption.textContent = currentLevelContent[currentImageIndex].caption;
+
+            currentState.wordProgress.targetWord = currentItem.word; 
+            currentState.wordProgress.wordDisplay = Array(currentItem.word.length).fill('_');
+            currentState.wordProgress.currentLetterIndex = 0;
+            imageCaption.textContent = currentState.wordProgress.wordDisplay.join(' ');
+        }
+        else if (currentState.currentLevel === 'levelOne') {
             currentImage.src = currentLevelContent[currentImageIndex].src;
             imageCaption.textContent = currentLevelContent[currentImageIndex].caption;
         } 
@@ -371,10 +384,6 @@
                 currentImage.src = ''; // Clear image
                 imageCaption.textContent = currentLevelContent[currentImageIndex].content;
             }
-        else{ //level 3
-            currentImage.src = currentLevelContent[currentImageIndex].src;
-            imageCaption.textContent = currentLevelContent[currentImageIndex].caption;
-        }
 
         }
 
@@ -438,43 +447,96 @@
             }
         }
 
-        // computer vision stuff happens,,, detecting the correct usage... 
-        // updateResult(true); if they got it right and false if they didn't
 
-        // ------ FOR LEVEL 3 --------  
-        //final letter variable will be called letter bc i forgot the variable name sorry
-        //targetWord
-        function checkLetter(letter) {
-            this.currentIndex = 0;
-            letter = letter.toLowerCase();// is it already lowercase?? if not lets do this 
+        // function checkLetter(letter) {
+        //     this.currentIndex = 0;
+        //     letter = letter.toLowerCase();// is it already lowercase?? if not lets do this 
 
-            if (letter === this.targetWord[this.currentIndex]) {
-                this.wordDisplay[this.currentIndex] = letter;
+        //     if (letter === this.targetWord[this.currentIndex]) {
+        //         this.wordDisplay[this.currentIndex] = letter;
 
-                //move on to the next letter
-                this.currentIndex++;
+        //         //move on to the next letter
+        //         this.currentIndex++;
 
-                if (this.currentIndex === this.targetWord.length) {//check if done
-                    return {
-                        status: 'complete',
-                        message: 'Yay! You signed the entire word!',
-                        display: this.wordDisplay.join(' ')
-                    };
-                }
+        //         if (this.currentIndex === this.targetWord.length) {//check if done
+        //             return {
+        //                 status: 'complete',
+        //                 message: 'Yay! You signed the entire word!',
+        //                 display: this.wordDisplay.join(' ')
+        //             };
+        //         }
+        // Modify the socket prediction handling to check word progress
+socket.on('prediction', (data) => {
+    if (data && data.letter) {
+        predictionOverlay.textContent = `Prediction: ${data.letter} (Confidence: ${(data.confidence * 100).toFixed(2)}%)`;
+        
+        // Special handling for level three
+        if (currentState.currentLevel === 'levelThree') {
+            const progress = checkWordLetter(data.letter);
+            
+            // Update image caption to reflect word progress
+            const imageCaption = document.getElementById('imageCaption');
+            imageCaption.textContent = progress.display;
+            
+            // Check if word is complete
+            if (progress.status === 'complete') {
+                // Automatically move to next word
+                nextImage();
+            }
+        } else {
+            // Existing logic for other levels
+            imageCaption = document.getElementById('imageCaption').innerText;
+            if (imageCaption === data.letter) {
+                updateResult(true);
+            } else updateResult(false);
+        }
+    } else {
+        predictionOverlay.textContent = "You're not currently signing a letter.";
+    }
+});
+
+// New function to check word letter progress
+function checkWordLetter(letter) {
+    // Ensure letter is lowercase
+    letter = letter.toLowerCase();
+
+    console.log(letter);
+    
+    
+    // Get current word progress details
+    const progress = currentState.wordProgress;
+    
+    // Check if the signed letter matches the expected letter
+    if (letter === progress.targetWord[progress.currentLetterIndex]) {
+        // Update word display
+        progress.wordDisplay[progress.currentLetterIndex] = letter;
+        
+        // Move to next letter
+        progress.currentLetterIndex++;
+        
+        // Check if whole word is complete
+        if (progress.currentLetterIndex === progress.targetWord.length) {
+            updateResult(true);
+            return {
+                status: 'complete',
+                message: 'Yay! You signed the entire word!',
+                display: progress.wordDisplay.join(' ')
+            };
+        }
                 //update result message bc they spelled the letter correctly 
                 updateResult(true);
                 return {
                     status: 'correct',
                     message: 'Correct! Next letter.',
-                    display: this.wordDisplay.join(' ')
+                    display: progress.wordDisplay.join(' ')
                 };
             } else {
                 updateResult(false);
                 //incorrect letter
                 return {
                     status: 'incorrect',
-                    message: `Incorrect. Try again. Looking for ${this.targetWord[this.currentIndex]}.`,
-                    display: this.wordDisplay.join(' ')
+                    message: `Incorrect. Try again. Looking for ${this.targetWord[progress.currentIndex]}.`,
+                    display: progress.wordDisplay.join(' ')
                 };
             }
         }
