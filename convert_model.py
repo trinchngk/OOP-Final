@@ -118,9 +118,7 @@ def load_test_data():
     - Test data array or None
     """
     try:
-        # Example: Generate random test data
-        # Replace this with your actual test data loading method
-        x_test = np.random.rand(32, 63).astype('float32')  # Adjust shape to match model input
+        x_test = np.random.rand(32, 63).astype('float32') 
         return x_test
     except Exception as e:
         print(f"Error loading test data: {e}")
