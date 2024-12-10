@@ -1,4 +1,69 @@
-Installation process: 
+—---------------------- 
+Nonwimp 2 
+Authors: Andrea Cabochan, Trin Changkasiri, Eliana Longoria-Valenzuela 
+Date: December 8th 2024
+—----------------------
+
+Program: 
+
+Our Nonwimp project is an American Sign Language (ASL) fingerspelling learning 
+application designed to teach users how to fingerspell through three 
+progressively challenging levels.
+
+Level 1: Users are presented with an image of the letter’s ASL sign and must 
+replicate it correctly to move onto the next letter. 
+
+Level 2: Users then review the alphabet without the visual sign of the letter, 
+reinforcing their memory of the sign 
+
+Level 3: The user must fingerspell an entire word. 
+
+—----- 
+Program design: 
+The program’s frontend uses a clean javascript design to integrate the user 
+interface and the computer vision. We have a panel for the computer vision 
+aspect of the program on the left side of the window.  
+For this, we use the framework OpenCV which processes the live user webcam 
+input for sign recognition.
+On the right side of the window, users either see the letter, or the word 
+they must sign (depending on the level). 
+Two buttons, “Next” and “Previous”, give the user the option to manually 
+move on to the next letter (this is also done automatically once the user 
+correctly fingerspells the letter). A “Next Level” button will make the program 
+progress to the next level of the teaching process. 
+
+Finally, below the camera div, we have an automatic feedback display. If the 
+user input matches the expected sign, a checkmark with ‘Correct!’ will appear 
+and if the user spells the letter incorrectly an X with “Try again” will appear. 
+
+Backend: 
+The backend employs computer vision and machine learning for sign recognition. 
+
+The computer vision backend part of our program consists of taking the webcam 
+input and capturing specific frames and comparing it to the ASLRecognizer which 
+is pre-trained by data sets. The neural network, implemented by TensorPlow and 
+Keras, was trained on pre-made datasets. One technical issue that we encountered
+ was the accuracy of our model. During our initial presentation and testing, 
+ the model’s accuracy was suboptimal. By more adding more pictures to the 
+ training data, with diverse hand signs and angels, we significantly improved 
+ the accuracy. 
+
+—---- 
+Interesting technical features/issues
+
+One of our technical issues included combining and implementing the js front 
+end and the python back end. We considered changing our backend to 
+MediaPipe.js, but ultimately we resolved the compatibility issues and kept the 
+Python backend. 
+
+We attempted to create the level 3 functionality of letter tracking in the 
+word as the user spells it. When our program detected the correct sign of each 
+letter, it would display the letter and move on to the next letter in the 
+word. Unfortunately, we couldn’t achieve the functionality within the deadline.
+
+
+—-- compilation instructions —- 
+Installation instructions for the Media Pipe 
 
 1. Download python 3.10.11 from browser
 2. run on cmd line: python3.10 -m venv myenv
@@ -6,8 +71,11 @@ Installation process:
 4. run on cmd line: python3.10 --version
 5. run on cmd line: pip install requirements
 6. run on cmd line: pip install opencv-python numpy tensorflow scikit-learn mediapipe 
-pip install flask flask-socketio flask-cors waitress socket.io tensorflow.js keras
+7. run on cmd line: pip install flask_cors waitress keras tensorflowjs flask flask_socketio
 8. run on cmd line: python3.10 asl_trainer.py
-9. run on cmd line: python3.10 server.py
+9. run on cmd line: python3.10 convert_model.py
+10. run on cmd line: python3.10 server.py
 
 to exit virtual env: deactivate
+
+There you go! 
