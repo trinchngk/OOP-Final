@@ -6,12 +6,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <style>
-        /* body { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            font-family: Arial, sans-serif; 
-        } */
         #videoContainer {
             position: relative;
             width: 888px;
@@ -213,6 +207,11 @@
     </div>
 
     <script>
+
+             // // // // // // // // // // // // // // // // // // // //
+            // ^^^ MEDIAPIPE JS and TENSORFLOW JS provided code ^^^ // 
+          // // // // // // // // // // // // // // // // // // // //
+
         document.addEventListener('DOMContentLoaded', () => {
             const videoElement = document.getElementById('videoFeed'); // Use the existing videoFeed element
             const predictionOverlay = document.getElementById('predictionOverlay');
@@ -250,18 +249,27 @@
                 socket.emit('predict', { frame: frameData });
             }, 100); // Send frame every 100ms
 
-            // Handle prediction response
+              // // // // // // // // // // // // // // // // // // // //
+            // ^^^ MEDIAPIPE JS and TENSORFLOW JS provided code ^^^ // 
+          // // // // // // // // // // // // // // // // // // // //
+
+
+
+
+            // Our Prediction logic integrated with letter comparison and switching
             socket.on('prediction', (data) => {
+                imageCaption = document.getElementById('imageCaption').innerText;
+                console.log(imageCaption)
+
                 if (data && data.letter) {
-                    predictionOverlay.textContent = `Prediction: ${data.letter} (Confidence: ${(data.confidence * 100).toFixed(2)}%)`;
-                    imageCaption = document.getElementById('imageCaption').innerText;
+                    predictionOverlay.textContent = `You're signing a ${data.letter}!`;
 
                     console.log("caption" + imageCaption);
                     console.log("prediction:" + data.letter);
                     if (imageCaption === data.letter) {
                         updateResult(true);
                         nextImage();
-                    } else updateResult(false);
+                    } else updateResult(false); 
                     
                 } else {
                     predictionOverlay.textContent = "You're not currently signing a letter.";
@@ -272,10 +280,11 @@
 
     </script>
 
-
-
+    <!-- Level partitioning  -->
     <script>
         const levels = {
+
+            // levelOne: Single letters with aid
             levelOne: [
                 { src: 'templates/ASL_Letters/ASL_Letter_A.png', caption: 'A' },
                 { src: 'templates/ASL_Letters/ASL_Letter_B.png', caption: 'B' },
@@ -304,6 +313,8 @@
                 { src: 'templates/ASL_Letters/ASL_Letter_Y.png', caption: 'Y' },
                 // { src: 'alphabet_images/Z.png', caption: 'Z - (sign with left hand)' },
             ],
+        
+            // levelTwo: Single letters without aid
             levelTwo: [
                 { content: 'A' },
                 { content: 'B' },
@@ -332,11 +343,13 @@
                 { content: 'Y' },
                 // { content: 'Z' }
             ],
+
+            // levelThree: Spell out words
             levelThree: [
 
-                { src: 'ASL_Letters/Cat.PNG', caption: '_ _ _', word: ' cat'},
-                { src: 'ASL_Letters/Dog.PNG', caption: '_ _ _', word: 'dog' },
-                { src: 'ASL_Letters/Fish.PNG', caption: '_ _ _ _', word: 'fish' },
+                { src: 'templates/ASL_Letters/Cat.PNG', caption: '_ _ _', word: 'cat'},
+                { src: 'templates/ASL_Letters/Dog.PNG', caption: '_ _ _', word: 'dog'},
+                { src: 'templates/ASL_Letters/Fish.PNG', caption: '_ _ _ _', word: 'fish'},
                 // { src: 'word_images/Ice.png', caption: '_ _ _', word: 'ice' },
                 // { src: 'word_images/poke.png', caption: '_ _ _ _', word: 'poke' },
                 // { src: 'word_images/Stir.png', caption: '_ _ _ _', word: 'stir' },
@@ -349,10 +362,12 @@
 
         };
         
+        // Global state and image variables to keep track of levels and letters
         let currentState = {
-            currentLevel: 'levelOne', // default
+            currentLevel: 'levelOne',
             currentIndex: 0
         };
+
         let currentImageIndex = 0;
 
 
@@ -367,23 +382,23 @@
             const imageCaption = document.getElementById('imageCaption');
         
 
-        if(currentState.currentLevel === 'levelThree'){ //level 3
-            currentImage.src = currentLevelContent[currentImageIndex].src;
-            imageCaption.textContent = currentLevelContent[currentImageIndex].caption;
+            if (currentState.currentLevel === 'levelThree'){ //level 3
+                currentImage.src = currentLevelContent[currentImageIndex].src;
+                imageCaption.textContent = currentLevelContent[currentImageIndex].caption;
 
-            currentState.wordProgress.targetWord = currentItem.word; 
-            currentState.wordProgress.wordDisplay = Array(currentItem.word.length).fill('_');
-            currentState.wordProgress.currentLetterIndex = 0;
-            imageCaption.textContent = currentState.wordProgress.wordDisplay.join(' ');
-        }
-        else if (currentState.currentLevel === 'levelOne') {
-            currentImage.src = currentLevelContent[currentImageIndex].src;
-            imageCaption.textContent = currentLevelContent[currentImageIndex].caption;
-        } 
-        else if (currentState.currentLevel === 'levelTwo') {
-                currentImage.src = ''; // Clear image
-                imageCaption.textContent = currentLevelContent[currentImageIndex].content;
+                currentState.wordProgress.targetWord = currentItem.word; 
+                currentState.wordProgress.wordDisplay = Array(currentItem.word.length).fill('_');
+                currentState.wordProgress.currentLetterIndex = 0;
+                imageCaption.textContent = currentState.wordProgress.wordDisplay.join(' ');
             }
+            else if (currentState.currentLevel === 'levelOne') {
+                currentImage.src = currentLevelContent[currentImageIndex].src;
+                imageCaption.textContent = currentLevelContent[currentImageIndex].caption;
+            } 
+            else if (currentState.currentLevel === 'levelTwo') {
+                    currentImage.src = ''; // Clear image
+                    imageCaption.textContent = currentLevelContent[currentImageIndex].content;
+                }
 
         }
 
@@ -423,6 +438,7 @@
                 tryAgainImage.style.display = 'inline-block';
             }
         }
+
         function nextLevel() {
             const levelProgression = {
                 'levelOne': 'levelTwo',
@@ -437,6 +453,7 @@
                 console.log('You have completed all levels of ABCs of ASL!');
             }
         }
+
         function changeLevel(newLevel) {
             if (levels[newLevel]) {
                 currentState.currentLevel = newLevel;
@@ -447,100 +464,6 @@
             }
         }
 
-
-        // function checkLetter(letter) {
-        //     this.currentIndex = 0;
-        //     letter = letter.toLowerCase();// is it already lowercase?? if not lets do this 
-
-        //     if (letter === this.targetWord[this.currentIndex]) {
-        //         this.wordDisplay[this.currentIndex] = letter;
-
-        //         //move on to the next letter
-        //         this.currentIndex++;
-
-        //         if (this.currentIndex === this.targetWord.length) {//check if done
-        //             return {
-        //                 status: 'complete',
-        //                 message: 'Yay! You signed the entire word!',
-        //                 display: this.wordDisplay.join(' ')
-        //             };
-        //         }
-        // Modify the socket prediction handling to check word progress
-socket.on('prediction', (data) => {
-    if (data && data.letter) {
-        predictionOverlay.textContent = `Prediction: ${data.letter} (Confidence: ${(data.confidence * 100).toFixed(2)}%)`;
-        
-        // Special handling for level three
-        if (currentState.currentLevel === 'levelThree') {
-            const progress = checkWordLetter(data.letter);
-            
-            // Update image caption to reflect word progress
-            const imageCaption = document.getElementById('imageCaption');
-            imageCaption.textContent = progress.display;
-            
-            // Check if word is complete
-            if (progress.status === 'complete') {
-                // Automatically move to next word
-                nextImage();
-            }
-        } else {
-            // Existing logic for other levels
-            imageCaption = document.getElementById('imageCaption').innerText;
-            if (imageCaption === data.letter) {
-                updateResult(true);
-            } else updateResult(false);
-        }
-    } else {
-        predictionOverlay.textContent = "You're not currently signing a letter.";
-    }
-});
-
-// New function to check word letter progress
-function checkWordLetter(letter) {
-    // Ensure letter is lowercase
-    letter = letter.toLowerCase();
-
-    console.log(letter);
-    
-    
-    // Get current word progress details
-    const progress = currentState.wordProgress;
-    
-    // Check if the signed letter matches the expected letter
-    if (letter === progress.targetWord[progress.currentLetterIndex]) {
-        // Update word display
-        progress.wordDisplay[progress.currentLetterIndex] = letter;
-        
-        // Move to next letter
-        progress.currentLetterIndex++;
-        
-        // Check if whole word is complete
-        if (progress.currentLetterIndex === progress.targetWord.length) {
-            updateResult(true);
-            return {
-                status: 'complete',
-                message: 'Yay! You signed the entire word!',
-                display: progress.wordDisplay.join(' ')
-            };
-        }
-                //update result message bc they spelled the letter correctly 
-                updateResult(true);
-                return {
-                    status: 'correct',
-                    message: 'Correct! Next letter.',
-                    display: progress.wordDisplay.join(' ')
-                };
-            } else {
-                updateResult(false);
-                //incorrect letter
-                return {
-                    status: 'incorrect',
-                    message: `Incorrect. Try again. Looking for ${this.targetWord[progress.currentIndex]}.`,
-                    display: progress.wordDisplay.join(' ')
-                };
-            }
-        }
-        updateImage(0);
     </script>
 </body>
 </html>
